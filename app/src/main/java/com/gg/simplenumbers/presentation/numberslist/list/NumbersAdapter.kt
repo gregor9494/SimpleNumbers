@@ -51,10 +51,6 @@ class NumbersAdapter( val items: MutableList<NumberListItem> = mutableListOf(), 
     }
 
     private fun updateList(items: List<NumberListItem>) {
-        if (this.items.none { it is NumberListItem.NumberItem }) {
-            this.items.addAll(items)
-            notifyDataSetChanged()
-        }
         val diffCallback = NumberItemDiffCallback(this.items, items)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 

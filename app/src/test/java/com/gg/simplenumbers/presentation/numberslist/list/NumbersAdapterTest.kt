@@ -49,4 +49,14 @@ class NumbersAdapterTest : AndroidTest() {
 
         numbersAdapter.items.contains(NumberListItem.LoadMoreItem) shouldEqual false
     }
+
+    @Test
+    fun `test has loading view when is loading and no data list is empty`() {
+        val data = emptyList<Int>()
+
+        numbersAdapter.updateData(data)
+        numbersAdapter.setLoadingMore(true)
+
+        numbersAdapter.items shouldEqual listOf(NumberListItem.LoadMoreItem)
+    }
 }

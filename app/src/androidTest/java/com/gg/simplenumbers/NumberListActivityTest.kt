@@ -4,10 +4,7 @@ import android.content.Intent
 import android.os.SystemClock
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
@@ -19,13 +16,14 @@ import com.gg.simplenumbers.di.useCaseModule
 import com.gg.simplenumbers.di.viewModelModule
 import com.gg.simplenumbers.domain.numbers.NumbersListRepository
 import com.gg.simplenumbers.presentation.numberslist.NumbersListActivity
+import com.gg.simplenumbers.presentation.numberslist.NumbersListViewModel
 import com.gg.simplenumbers.presentation.numberslist.list.NumberViewHolder
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
-import org.koin.core.context.stopKoin
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -44,25 +42,31 @@ class NumberListActivityTest : KoinTest {
     val numbersCache = NumbersCache()
     val pageSize = 30
     val data = (2..10_000 step 2).toMutableList()
+    val loadMoreDelay = 300L
 
     val testRepositoryModule = module {
         single { NumberListRepositoryImpl(numbersDataSource, numbersCache) as NumbersListRepository }
     }
 
+    val testViewModelModule = module {
+        viewModel { NumbersListViewModel(get(), get(), loadMoreDelay-100L) }
+    }
+
     @Before
     fun setup() {
+
         numbersDataSource.pageSize = pageSize
         numbersDataSource.list = data
-        loadKoinModules(viewModelModule, useCaseModule, testRepositoryModule)
+        loadKoinModules(testViewModelModule, useCaseModule, testRepositoryModule)
     }
 
     @Test
     fun testScrollWillLoadMoreItems() {
         activityTestRule.launchActivity(Intent())
-        val pageSize = pageSize
-        SystemClock.sleep(2500)
+
+        SystemClock.sleep(loadMoreDelay)
         onView(withId(R.id.numbersList)).perform(RecyclerViewActions.scrollToPosition<NumberViewHolder>(pageSize - 1))
-        SystemClock.sleep(2500)
+        SystemClock.sleep(loadMoreDelay)
         onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize * 2))
 
     }
@@ -74,8 +78,18 @@ class NumberListActivityTest : KoinTest {
 
         activityTestRule.launchActivity(Intent())
 
-        SystemClock.sleep(2500) // Wait until progressbar will disappear
+        SystemClock.sleep(loadMoreDelay)
         onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(0))
+    }
+
+    @Test
+    fun testLoadMoreWillShowAfterScrollToBottom() {
+        activityTestRule.launchActivity(Intent())
+
+        SystemClock.sleep(loadMoreDelay)
+        onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize))
+        onView(withId(R.id.numbersList)).perform(RecyclerViewActions.scrollToPosition<NumberViewHolder>(pageSize - 1))
+        onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize + 1))
     }
 
     @After
