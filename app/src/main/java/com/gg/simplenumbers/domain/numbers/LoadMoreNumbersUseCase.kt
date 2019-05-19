@@ -5,13 +5,17 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class LoadMoreNumbersUseCase(
     private val backgroundExecutor: Scheduler = Schedulers.io(),
     private val resultExecutionThread: Scheduler = AndroidSchedulers.mainThread(),
     private val numbersListRepository: NumbersListRepository
 ) {
-    fun loadMoreNumbers(): Single<LoadMoreResult> = numbersListRepository.loadMoreNumbers()
-        .subscribeOn(backgroundExecutor)
-        .observeOn(resultExecutionThread)
+    // Delay is just for better looking pagination
+    fun loadMoreNumbers(delayMilliseconds: Long = 0): Single<LoadMoreResult> =
+        numbersListRepository.loadMoreNumbers()
+            .delaySubscription(delayMilliseconds, TimeUnit.MILLISECONDS,backgroundExecutor)
+            .subscribeOn(backgroundExecutor)
+            .observeOn(resultExecutionThread)
 }

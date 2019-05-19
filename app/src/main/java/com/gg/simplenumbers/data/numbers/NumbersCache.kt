@@ -14,4 +14,8 @@ class NumbersCache {
     }
 
     fun observeNumbersList(): Observable<List<Int>> = list
+
+    fun clear() {
+        list.onNext(emptyList())
+    }
 }

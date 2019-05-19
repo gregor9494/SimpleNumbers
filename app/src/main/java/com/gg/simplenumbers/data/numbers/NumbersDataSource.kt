@@ -16,6 +16,12 @@ class NumbersDataSource {
     }
 
     fun getPage(page: Int): Single<List<Int>> {
-        return Single.just(list.subList(page * pageSize, page * pageSize + pageSize))
+        val list =
+            when {
+                (page + 1) * pageSize < list.size -> list.subList(page * pageSize, (page + 1) * pageSize)
+                page * pageSize < list.size  -> list.subList(page * pageSize, list.size)
+                else -> emptyList<Int>()
+            }
+        return Single.just(list)
     }
 }

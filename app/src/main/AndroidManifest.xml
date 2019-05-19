@@ -8,6 +8,7 @@
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
+            android:name=".app.SimpleNumberApplication"
             android:theme="@style/AppTheme">
         <activity android:name=".presentation.numberslist.NumbersListActivity">
             <intent-filter>
