@@ -10,7 +10,7 @@ import com.gg.simplenumbers.ui.list.RecyclerViewScrollListener
 class NumbersListViewModel(
     private val getNumbersListUseCase: GetSortedNumbersListUseCase,
     private val loadMoreNumbersUseCase: LoadMoreNumbersUseCase,
-    private val loadMoreDelayMilliseconds : Long = 2000 // Delay is just for better looking pagination
+    private val loadMoreDelayMilliseconds: Long = 2000 // Delay is just for better looking pagination
 ) : BaseViewModel(), RecyclerViewScrollListener.OnLoadMoreListener {
 
     private var canLoadMore: Boolean = true

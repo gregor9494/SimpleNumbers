@@ -15,5 +15,11 @@ object NumberListBinding {
         }
     }
 
-
+    @BindingAdapter("numberListIsLoading")
+    @JvmStatic
+    fun setIsLoadingMore(recyclerView: RecyclerView, isLoadingMore: Boolean) {
+        with(recyclerView.adapter as NumbersAdapter) {
+            this.setLoadingMore(isLoadingMore)
+        }
+    }
 }

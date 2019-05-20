@@ -8,6 +8,9 @@
     </data>
 
     <TextView
+            android:background="@android:color/white"
+            android:elevation="1dp"
+            android:layout_margin="5dp"
             android:id="@+id/tvNumber"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

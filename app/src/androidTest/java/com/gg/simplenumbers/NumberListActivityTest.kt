@@ -54,7 +54,6 @@ class NumberListActivityTest : KoinTest {
 
     @Before
     fun setup() {
-
         numbersDataSource.pageSize = pageSize
         numbersDataSource.list = data
         loadKoinModules(testViewModelModule, useCaseModule, testRepositoryModule)

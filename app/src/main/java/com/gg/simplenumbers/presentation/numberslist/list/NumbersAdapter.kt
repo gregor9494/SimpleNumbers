@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.gg.simplenumbers.R
 
-class NumbersAdapter( val items: MutableList<NumberListItem> = mutableListOf(), var isLoading: Boolean = true) :
+class NumbersAdapter(val items: MutableList<NumberListItem> = mutableListOf(), var isLoading: Boolean = false) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -40,7 +40,7 @@ class NumbersAdapter( val items: MutableList<NumberListItem> = mutableListOf(), 
             notifyItemRemoved(items.size)
         } else if (!items.contains(NumberListItem.LoadMoreItem)) {
             items.add(NumberListItem.LoadMoreItem)
-            notifyItemInserted(items.size-1)
+            notifyItemInserted(items.size - 1)
         }
     }
 
@@ -50,12 +50,17 @@ class NumbersAdapter( val items: MutableList<NumberListItem> = mutableListOf(), 
         updateList(items)
     }
 
-    private fun updateList(items: List<NumberListItem>) {
-        val diffCallback = NumberItemDiffCallback(this.items, items)
+    private fun updateList(newItems: List<NumberListItem>) {
+        this.items.indexOf(NumberListItem.LoadMoreItem).takeIf { it != -1 }?.let {
+            this.items.removeAt(it)
+            notifyItemRemoved(it)
+        }
+
+        val diffCallback = NumberItemDiffCallback(this.items, newItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
         this.items.clear()
-        this.items.addAll(items)
+        this.items.addAll(newItems)
         diffResult.dispatchUpdatesTo(this)
     }
 }
