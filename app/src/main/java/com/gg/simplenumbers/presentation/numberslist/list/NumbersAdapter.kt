@@ -51,6 +51,7 @@ class NumbersAdapter(val items: MutableList<NumberListItem> = mutableListOf(), v
     }
 
     private fun updateList(newItems: List<NumberListItem>) {
+        // Just little workaround for scrolling to new loader item position
         this.items.indexOf(NumberListItem.LoadMoreItem).takeIf { it != -1 }?.let {
             this.items.removeAt(it)
             notifyItemRemoved(it)

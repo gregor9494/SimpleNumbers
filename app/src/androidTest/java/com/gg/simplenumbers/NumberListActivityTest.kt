@@ -2,9 +2,13 @@ package com.gg.simplenumbers
 
 import android.content.Intent
 import android.os.SystemClock
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
@@ -18,6 +22,7 @@ import com.gg.simplenumbers.domain.numbers.NumbersListRepository
 import com.gg.simplenumbers.presentation.numberslist.NumbersListActivity
 import com.gg.simplenumbers.presentation.numberslist.NumbersListViewModel
 import com.gg.simplenumbers.presentation.numberslist.list.NumberViewHolder
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -49,7 +54,7 @@ class NumberListActivityTest : KoinTest {
     }
 
     val testViewModelModule = module {
-        viewModel { NumbersListViewModel(get(), get(), loadMoreDelay-100L) }
+        viewModel { NumbersListViewModel(get(), get(), get(), loadMoreDelay - 100L) }
     }
 
     @Before
@@ -89,6 +94,38 @@ class NumberListActivityTest : KoinTest {
         onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize))
         onView(withId(R.id.numbersList)).perform(RecyclerViewActions.scrollToPosition<NumberViewHolder>(pageSize - 1))
         onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize + 1))
+    }
+
+    @Test
+    fun testAddDialogWillShowAfterAddButtonClick() {
+        activityTestRule.launchActivity(Intent())
+
+        onView(withId(R.id.bAddNew)).perform(click())
+        onView(withId(R.id.etNumber))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testAddNumberInDialogWillAddNewItemToList() {
+        activityTestRule.launchActivity(Intent())
+
+        onView(withId(R.id.bAddNew)).perform(click())
+        onView(withId(R.id.etNumber)).perform(typeText("1"))
+        onView(withId(R.id.etNumber)).perform(closeSoftKeyboard())
+        onView(withId(android.R.id.button1)).perform(click())
+        onView(withId(R.id.numbersList)).check(RecyclerViewItemCountAssertion(pageSize+1))
+    }
+
+    @Test
+    fun testAddNumberInDialogWillDismissAfterCloseClick() {
+        activityTestRule.launchActivity(Intent())
+
+        onView(withId(R.id.bAddNew)).perform(click())
+        onView(withId(android.R.id.button2)).perform(click())
+        onView(withId(R.id.etNumber))
+            .check(doesNotExist())
+
     }
 
     @After
