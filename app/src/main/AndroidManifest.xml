@@ -9,8 +9,11 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:name=".app.SimpleNumberApplication"
+
             android:theme="@style/AppTheme">
-        <activity android:name=".presentation.numberslist.NumbersListActivity">
+        <activity
+                android:name=".presentation.numberslist.NumbersListActivity"
+                android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
