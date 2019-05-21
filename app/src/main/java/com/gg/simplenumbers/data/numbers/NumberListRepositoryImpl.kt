@@ -10,6 +10,7 @@ class NumberListRepositoryImpl(
     private val numbersCache: NumbersCache
 ) : NumbersListRepository {
 
+
     override fun getNumbersList(): Observable<List<Int>> = numbersCache.observeNumbersList()
 
     override fun loadMoreNumbers(): Single<LoadMoreResult> {
@@ -20,5 +21,9 @@ class NumberListRepositoryImpl(
                     LoadMoreResult.Success
                 } else return@map LoadMoreResult.NoMore
             }.onErrorReturnItem(LoadMoreResult.Error)
+    }
+
+    override fun addNewNumber(number: Int): Boolean {
+        return numbersCache.addNumber(number)
     }
 }
